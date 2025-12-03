@@ -44,9 +44,7 @@ available_move(ROW,COL,T) :- pushable(ROW,COL,T) .
 available_move(ROW,COL,T) :- adjacent(ROW,COL,T), cell(ROW,COL,open), not crate(ROW,COL,T) .
 
 %Choose 1 move_to() per turn as a player action
-{move_to(ROW,COL,T):available_move(ROW,COL,T)} <= 1 :- time(T) . %There is some problem with this line---------------------------------------------------------------------------------------------------------------------------------------------------------
-
-%move_to(1,3,0) .
+{move_to(ROW,COL,T):available_move(ROW,COL,T)} <= 1 :- time(T) . 
 
 %Define static relationships, i.e crates, walls and open spaces remain if not affected
 player_position(ROW,COL,T+1) :- player_position(ROW,COL,T),time(T), not -player_position(ROW,COL,T+1) .
@@ -68,5 +66,3 @@ goal_requirement :- crate(1,4,T), crate(3,2,T) .
 
 %OBS this can risk failing to find solutions, therefore only use for testing. to reduce calculations restrict the player from moving back to the tile it came from
 #show move_to/3 .
-%#show player_position/3 .
-%#show available_move/3 .
