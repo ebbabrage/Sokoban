@@ -32,17 +32,24 @@ crate(ROW,COL,T+1) :- crate(ROW,COL,T), time(T), not -crate(ROW,COL,T+1) .
 player_position(ROW,COL,T+1) :- move_to(ROW,COL,T) .
 -player_position(ROW,COL,T+1) :- move_to(_,_,T), player_position(ROW,COL,T) .
 
-crate(ROW+1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW . %south
-crate(ROW-1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW . %north
-crate(ROW,COL-1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL . %west
-crate(ROW,COL+1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL . %east
+%Normal tiles crate movement
+crate(ROW+1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, not oneWayTeleporter(ROW+1, COL, _, _) . %south
+crate(ROW-1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, not oneWayTeleporter(ROW-1, COL, _, _) . %north
+crate(ROW,COL-1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, not oneWayTeleporter(ROW, COL-1, _, _) . %west
+crate(ROW,COL+1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, not oneWayTeleporter(ROW, COL+1, _, _) . %east
 -crate(ROW,COL,T+1)  :- move_to(ROW,COL,T),crate(ROW,COL,T) .
+
+%Teleporter crate movement
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, oneWayTeleporter(ROW+1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %south
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, oneWayTeleporter(ROW-1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %north
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, oneWayTeleporter(ROW, COL-1, DESTIONATION_ROW, DESTIONATION_COL) . %west
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, oneWayTeleporter(ROW, COL+1, DESTIONATION_ROW, DESTIONATION_COL) . %east
 
 %Check if crates cover all goal states (do this by checking if there exists a crate which is not covered)
 :- not goal_requirement . 
 
 %Minimize solution
-#minimize { T : move_to(_,_,T) }
+#minimize { T : move_to(_,_,T) } .
 
 %OBS this can risk failing to find solutions, therefore only use for testing. to reduce calculations restrict the player from moving back to the tile it came from
 #show move_to/3 .
