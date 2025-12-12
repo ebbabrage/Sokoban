@@ -16,11 +16,13 @@ board.start()
 board.printB()
 
 def get_hint():
+
     # get the board
     board_state = board.get_board()
 
     # make list to put rows in
     rows = []
+    goals = []
 
     for row in range(len(board_state)):
         for col in range(len(board_state[row])):
@@ -34,13 +36,21 @@ def get_hint():
 
             # a box, goal or player position
             if pos == "b":
-                rows.append(f"box({row},{col}).")
+                rows.append(f"crate({row},{col}).")
 
             if pos == "g":
-                rows.append(f"goal({row},{col}).")
+                goals.append((row,col))
 
             if pos == "p":    
-                rows.append(f"player_pos({row},{col}).")
+                rows.append(f"player_position({row},{col}).")
+
+    # fixing formatting for goal_requirement
+    goals_string = "goal_requirement :-"
+    for x in goals:
+        goals_string = goals_string + f"crate({x[0]},{x[1]},T),"
+
+    goals_string = goals_string[:-1] + "."
+    rows.append(goals_string)
 
     #write the lp file
     with open("hint.lp", "w") as f:
@@ -48,11 +58,24 @@ def get_hint():
     
     # run new lp file with lp-solver
     result = subprocess.run(["clingo", "hint.lp", "sokoban_solver.lp"],
-        output = True,
+        capture_output = True,
         text = True
     )
     
     sokoban_solver_output = result.stdout
+    split_result = sokoban_solver_output.split("\n")
+    index = 0
+    
+    while (split_result[index] != "OPTIMUM FOUND") and (index < len(split_result)): 
+        index += 1
+
+    split_result_list = split_result[index-2].split(" ")
+    tripplet_list = []
+    
+    for x in split_result_list:
+        tripplet_list.append(x[8:-1].split(","))
+
+    return split_result_list
 
 while True:
     print("Make a move:", end=" ")
@@ -67,7 +90,6 @@ while True:
         get_hint()
     else:
         player.move(move)
-    
     board.printB()
 
     if goal.is_winner():
