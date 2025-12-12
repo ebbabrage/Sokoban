@@ -16,7 +16,8 @@ cell(5,0,wall) . cell(5,1,wall) . cell(5,2,wall) . cell(5,3,wall) . cell(5,4,wal
 %Initiate player_position(row,col), crates(row,col)
 player_position(1,1) . %get from player
 crate(1,3) . %read from board
-oneWayTeleporter(1,4,2,2) .
+crate_one_way_teleporter(1,4,2,2) .
+human_one_way_teleporter(1,4,3,2) .
 
 %Goal coordinates as crates
-goal_requirement :- crate(4,2,T) .
+goal_requirement :- crate(1,2,T) .

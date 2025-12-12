@@ -29,21 +29,24 @@ player_position(ROW,COL,T+1) :- player_position(ROW,COL,T),time(T), not -player_
 crate(ROW,COL,T+1) :- crate(ROW,COL,T), time(T), not -crate(ROW,COL,T+1) .
 
 %Define effect of move_to(), i.e player movement and pushing crates. A space becomes empty if the player moves away from it. A crate gets pushed if a player moves into it
-player_position(ROW,COL,T+1) :- move_to(ROW,COL,T) .
+player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), not human_one_way_teleporter(ROW, COL, _, _) .
 -player_position(ROW,COL,T+1) :- move_to(_,_,T), player_position(ROW,COL,T) .
 
+%Human teleporter movement
+player_position(DESTIONATION_ROW,DESTIONATION_COL,T+1) :- move_to(ROW,COL,T), human_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL) .
+
 %Normal tiles crate movement
-crate(ROW+1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, not oneWayTeleporter(ROW+1, COL, _, _) . %south
-crate(ROW-1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, not oneWayTeleporter(ROW-1, COL, _, _) . %north
-crate(ROW,COL-1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, not oneWayTeleporter(ROW, COL-1, _, _) . %west
-crate(ROW,COL+1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, not oneWayTeleporter(ROW, COL+1, _, _) . %east
+crate(ROW+1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, not crate_one_way_teleporter(ROW+1, COL, _, _) . %south
+crate(ROW-1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, not crate_one_way_teleporter(ROW-1, COL, _, _) . %north
+crate(ROW,COL-1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, not crate_one_way_teleporter(ROW, COL-1, _, _) . %west
+crate(ROW,COL+1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, not crate_one_way_teleporter(ROW, COL+1, _, _) . %east
 -crate(ROW,COL,T+1)  :- move_to(ROW,COL,T),crate(ROW,COL,T) .
 
 %Teleporter crate movement
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, oneWayTeleporter(ROW+1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %south
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, oneWayTeleporter(ROW-1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %north
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, oneWayTeleporter(ROW, COL-1, DESTIONATION_ROW, DESTIONATION_COL) . %west
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, oneWayTeleporter(ROW, COL+1, DESTIONATION_ROW, DESTIONATION_COL) . %east
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, crate_one_way_teleporter(ROW+1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %south
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, crate_one_way_teleporter(ROW-1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %north
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, crate_one_way_teleporter(ROW, COL-1, DESTIONATION_ROW, DESTIONATION_COL) . %west
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, crate_one_way_teleporter(ROW, COL+1, DESTIONATION_ROW, DESTIONATION_COL) . %east
 
 %Check if crates cover all goal states (do this by checking if there exists a crate which is not covered)
 :- not goal_requirement . 
