@@ -41,5 +41,8 @@ crate(ROW,COL+1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_R
 %Check if crates cover all goal states (do this by checking if there exists a crate which is not covered)
 :- not goal_requirement . 
 
+%Minimize solution
+#minimize { T : move_to(_,_,T) }
+
 %OBS this can risk failing to find solutions, therefore only use for testing. to reduce calculations restrict the player from moving back to the tile it came from
 #show move_to/3 .
