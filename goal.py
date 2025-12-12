@@ -1,4 +1,3 @@
-import board
 goals = []
 finishedBoxes = 0
 
