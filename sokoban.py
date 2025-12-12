@@ -15,7 +15,7 @@ info()
 board.start()
 board.printB()
 
-def get_hint(hint):
+def get_hint():
     # get the board
     board_state = board.get_board()
 
@@ -43,7 +43,7 @@ def get_hint(hint):
                 rows.append(f"player_pos({row},{col}).")
 
     #write the lp file
-    with open(hint, "w") as f:
+    with open("hint.lp", "w") as f:
         f.write("\n".join(rows))
     
     # run new lp file with lp-solver
