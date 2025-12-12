@@ -29,11 +29,11 @@ player_position(ROW,COL,T+1) :- player_position(ROW,COL,T),time(T), not -player_
 crate(ROW,COL,T+1) :- crate(ROW,COL,T), time(T), not -crate(ROW,COL,T+1) .
 
 %Define effect of move_to(), i.e player movement and pushing crates. A space becomes empty if the player moves away from it. A crate gets pushed if a player moves into it
-player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), not human_one_way_teleporter(ROW, COL, _, _) .
+player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), not player_one_way_teleporter(ROW, COL, _, _) .
 -player_position(ROW,COL,T+1) :- move_to(_,_,T), player_position(ROW,COL,T) .
 
 %Human teleporter movement
-player_position(DESTIONATION_ROW,DESTIONATION_COL,T+1) :- move_to(ROW,COL,T), human_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL) .
+player_position(DESTIONATION_ROW,DESTIONATION_COL,T+1) :- move_to(ROW,COL,T), player_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL) .
 
 %Normal tiles crate movement
 crate(ROW+1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, not crate_one_way_teleporter(ROW+1, COL, _, _) . %south
