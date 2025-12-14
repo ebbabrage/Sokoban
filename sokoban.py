@@ -23,6 +23,7 @@ def get_hint():
     # make list to put rows in
     rows = []
     goals = []
+    portals = []
 
     for row in range(len(board_state)):
         for col in range(len(board_state[row])):
@@ -43,6 +44,14 @@ def get_hint():
 
             if pos == "p":    
                 rows.append(f"player_position({row},{col}).")
+
+            if pos == "t":
+                portals.append((row,col))
+
+    if len(portals) == 2:
+        (fromRow,fromCol), (toRow,toCol) = portals
+
+        rows.append(f"crate_one_way_teleporter({fromRow},{fromCol},{toRow},{toCol}).")
 
     # fixing formatting for goal_requirement
     goals_string = "goal_requirement :-"
@@ -66,8 +75,12 @@ def get_hint():
     split_result = sokoban_solver_output.split("\n")
     index = 0
     
-    while (split_result[index] != "OPTIMUM FOUND") and (index < len(split_result)): 
+    while (index < len(split_result)) and (split_result[index] != "OPTIMUM FOUND") : 
         index += 1
+    
+    if index == len(split_result):
+        print("Board is not solvable, please reset to start over")
+        return None
 
     split_result_list = split_result[index-2].split(" ")
     tripplet_list = []
