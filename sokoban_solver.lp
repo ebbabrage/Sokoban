@@ -24,7 +24,7 @@ available_move(ROW,COL,T) :- adjacent(ROW,COL,T), cell(ROW,COL,open), not crate(
 %Choose 1 move_to() per turn as a player action
 {move_to(ROW,COL,T):available_move(ROW,COL,T)} <= 1 :- time(T) . 
 
-%Define static relationships, i.e crates, walls and open spaces remain if not affected
+%Inertia of fluents, i.e crates and plater position remain the same if not affected
 player_position(ROW,COL,T+1) :- player_position(ROW,COL,T),time(T), not -player_position(ROW,COL,T+1) .
 crate(ROW,COL,T+1) :- crate(ROW,COL,T), time(T), not -crate(ROW,COL,T+1) .
 
@@ -32,8 +32,11 @@ crate(ROW,COL,T+1) :- crate(ROW,COL,T), time(T), not -crate(ROW,COL,T+1) .
 player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), not player_one_way_teleporter(ROW, COL, _, _) .
 -player_position(ROW,COL,T+1) :- move_to(_,_,T), player_position(ROW,COL,T) .
 
-%Human teleporter movement
-player_position(DESTIONATION_ROW,DESTIONATION_COL,T+1) :- move_to(ROW,COL,T), player_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL) .
+%player teleporter movement
+player_position(DESTIONATION_ROW,DESTIONATION_COL,T+1) :- move_to(ROW,COL,T), player_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW,DESTIONATION_COL,T) .
+
+%If the player teleporter destination is occupied
+player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), player_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW,DESTIONATION_COL,T)  .
 
 %Normal tiles crate movement
 crate(ROW+1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, not crate_one_way_teleporter(ROW+1, COL, _, _) . %south
@@ -56,6 +59,13 @@ crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_RO
 
 %Ensure that crates and players will not exist at the same cell
 :- crate(ROW,COL,T), player_position(ROW,COL,T) .
+
+%A cell can not be both open and a wall
+:- cell(ROW,COL,open), cell(ROW,COL,wall) .
+
+%A players and crates can not be in a wall
+:- cell(ROW,COL,wall), player_position(ROW,COL,_) .
+:- cell(ROW,COL,wall), crate(ROW,COL,_) .
 
 %Check if crates cover all goal states (do this by checking if there exists a crate which is not covered)
 :- not goal_requirement . 
