@@ -67,6 +67,9 @@ crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_RO
 :- cell(ROW,COL,wall), player_position(ROW,COL,_) .
 :- cell(ROW,COL,wall), crate(ROW,COL,_) .
 
+%two crates can not exist in the same cell
+:- cell(ROW,COL,_), time(T), #count {crate(ROW,COL,T)} > 1 .
+
 %Check if crates cover all goal states (do this by checking if there exists a crate which is not covered)
 :- not goal_requirement . 
 
