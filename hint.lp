@@ -1,7 +1,26 @@
-cell(0,0,wall). cell(0,1,wall). cell(0,2,wall). cell(0,3,wall). cell(0,4,wall). cell(0,5,wall). cell(0,6,wall).
-cell(1,0,wall). cell(1,1,open). cell(1,2,open). cell(1,3,open). cell(1,4,open). cell(1,5,wall). cell(1,6,wall).
-cell(2,0,wall). cell(2,1,open). cell(2,2,wall). cell(2,3,wall). cell(2,4,wall). cell(2,5,wall). cell(2,6,wall).
-cell(3,0,wall). cell(3,1,open).
+cell(0,0,wall).
+cell(0,1,wall).
+cell(0,2,wall).
+cell(0,3,wall).
+cell(0,4,wall).
+cell(0,5,wall).
+cell(0,6,wall).
+cell(1,0,wall).
+cell(1,1,open).
+cell(1,2,open).
+cell(1,3,open).
+cell(1,4,open).
+cell(1,5,wall).
+cell(1,6,wall).
+cell(2,0,wall).
+cell(2,1,open).
+cell(2,2,wall).
+cell(2,3,wall).
+cell(2,4,wall).
+cell(2,5,wall).
+cell(2,6,wall).
+cell(3,0,wall).
+cell(3,1,open).
 player_position(3,1).
 cell(3,2,open).
 cell(3,3,open).
@@ -31,5 +50,5 @@ cell(6,3,wall).
 cell(6,4,wall).
 cell(6,5,wall).
 cell(6,6,wall).
-crate_one_way_teleporter(1,2,3,5).
+crate_one_way_teleporter(3,5,1,2).
 goal_requirement :-crate(1,4,T),crate(5,5,T).

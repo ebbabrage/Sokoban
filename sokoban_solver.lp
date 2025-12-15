@@ -1,5 +1,5 @@
 %Time horizon, time(T)
-time(0..30) .
+time(0..25) .
 
 %Initiate players and crates as time based /3
 player_position(ROW,COL,0) :- player_position(ROW,COL) .
