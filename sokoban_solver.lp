@@ -43,10 +43,16 @@ crate(ROW,COL+1,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_R
 -crate(ROW,COL,T+1)  :- move_to(ROW,COL,T),crate(ROW,COL,T) .
 
 %Teleporter crate movement
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, crate_one_way_teleporter(ROW+1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %south
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, crate_one_way_teleporter(ROW-1, COL, DESTIONATION_ROW, DESTIONATION_COL) . %north
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, crate_one_way_teleporter(ROW, COL-1, DESTIONATION_ROW, DESTIONATION_COL) . %west
-crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, crate_one_way_teleporter(ROW, COL+1, DESTIONATION_ROW, DESTIONATION_COL) . %east
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, crate_one_way_teleporter(ROW+1, COL, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW, DESTIONATION_COL) . %south
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, crate_one_way_teleporter(ROW-1, COL, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW, DESTIONATION_COL) . %north
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, crate_one_way_teleporter(ROW, COL-1, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW, DESTIONATION_COL) . %west
+crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, crate_one_way_teleporter(ROW, COL+1, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW, DESTIONATION_COL) . %east
+
+%If the destination of the teleporter is occupied
+crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, crate_one_way_teleporter(ROW+1, COL, DESTIONATION_ROW, DESTIONATION_COL), crate(DESTIONATION_ROW, DESTIONATION_COL) . %south
+crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW > ROW, crate_one_way_teleporter(ROW-1, COL, DESTIONATION_ROW, DESTIONATION_COL), crate(DESTIONATION_ROW, DESTIONATION_COL) . %north
+crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, crate_one_way_teleporter(ROW, COL-1, DESTIONATION_ROW, DESTIONATION_COL), crate(DESTIONATION_ROW, DESTIONATION_COL) . %west
+crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, crate_one_way_teleporter(ROW, COL+1, DESTIONATION_ROW, DESTIONATION_COL), crate(DESTIONATION_ROW, DESTIONATION_COL) . %east
 
 %Ensure that crates and players will not exist at the same cell
 :- crate(ROW,COL,T), player_position(ROW,COL,T) .
