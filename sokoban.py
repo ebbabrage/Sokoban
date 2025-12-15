@@ -11,16 +11,15 @@ def info():
     print("q - Quit\nr - Restart level\nhint - Get a hint\ninfo - Get this information again")
     print("------------------------------")
 
-info()
-board.start()
-board.printB()
+def sort_after(x):
+    return x[2]
 
 def get_hint():
 
     # get the board
     board_state = board.get_board()
 
-    # make list to put rows in
+    # list to put rows in
     rows = []
     goals = []
     portals = []
@@ -62,7 +61,7 @@ def get_hint():
     goals_string = goals_string[:-1] + "."
     rows.append(goals_string)
 
-    #write the lp file
+    # write the lp file
     with open("hint.lp", "w") as f:
         f.write("\n".join(rows))
     
@@ -89,7 +88,18 @@ def get_hint():
     for x in split_result_list:
         tripplet_list.append(x[8:-1].split(","))
 
-    return split_result_list
+    tripplet_list.sort(key=sort_after)
+
+    return tripplet_list
+
+info()
+while True:
+    lvl = input("Choose a level (1-2): ")
+    if int(lvl) > 0 and int(lvl) <= 2:
+        board.start(lvl)
+        board.printB()
+        break
+    print("Not a level")
 
 while True:
     print("Make a move:", end=" ")
@@ -101,7 +111,8 @@ while True:
     if move == "info":
         info()
     if move == "hint":
-        get_hint()
+        hint = get_hint()
+        board.show_hint(hint)
     else:
         player.move(move)
     board.printB()
