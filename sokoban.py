@@ -51,7 +51,7 @@ def get_hint():
     if len(portals) == 2:
         (fromRow,fromCol), (toRow,toCol) = portals
 
-        rows.append(f"crate_one_way_teleporter({fromRow},{fromCol},{toRow},{toCol}).")
+        rows.append(f"crate_one_way_teleporter({toRow},{toCol},{fromRow},{fromCol}).")
 
     # fixing formatting for goal_requirement
     goals_string = "goal_requirement :-"
