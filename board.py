@@ -2,6 +2,7 @@ import player
 import goal
 import portal
 board = []
+hint = ()
 
 symbols = {
     "w" : "#",
@@ -9,47 +10,42 @@ symbols = {
     "b" : "\u25A0",
     "g" : "\u2606",
     "p" : "\u25CB",
-    "t" : "|"
+    "t" : "|",
+    "h" : "\u25A1"
 }
 
-def start():
+def start(lvl):
     '''  Set initial gameboard  '''
     global board 
-    # board = [
-    #         ["w", "w", "w", "w", "w"],
-    #         ["w", "o", "g", "o", "w"],
-    #         ["w", "o", "o", "o", "w"],
-    #         ["w", "o", "b", "o", "w"],
-    #         ["w", "o", "p", "o", "w"],
-    #         ["w", "w", "w", "w", "w"]
-    #         ]
-    # player.uppdate_pos(4,2)
-    # goal.add_goal(1,2)
-    # board = [
-    #         ["w", "w", "w", "w", "w", "w"],
-    #         ["w", "p", "o", "b", "g", "w"],
-    #         ["w", "o", "b", "w", "w", "w"],
-    #         ["w", "o", "o", "o", "g", "w"],
-    #         ["w", "w", "w", "w", "w", "w"]
-    #         ]
-    # player.uppdate_pos(1,1)
-    # goal.add_goal(1,4)
-    # goal.add_goal(3,4)
-    board = [
-            ["w", "w", "w", "w", "w", "w", "w"],
-            ["w", "o", "t", "o", "g", "w", "w"],
-            ["w", "o", "w", "w", "w", "w", "w"],
-            ["w", "p", "o", "b", "o", "t", "w"],
-            ["w", "o", "w", "b", "w", "w", "w"],
-            ["w", "o", "o", "o", "o", "g", "w"],
-            ["w", "w", "w", "w", "w", "w", "w"]
-            ]
-    # Initial positions
-    player.uppdate_pos(3,1)
-    goal.add_goal(1,4)
-    goal.add_goal(5,5)
-    portal.add_portal(3,5)
-    portal.add_portal(1,2)
+    match lvl:
+        case "1":
+            board = [
+                    ["w", "w", "w", "w", "w", "w"],
+                    ["w", "p", "o", "b", "g", "w"],
+                    ["w", "o", "b", "w", "w", "w"],
+                    ["w", "o", "o", "o", "g", "w"],
+                    ["w", "w", "w", "w", "w", "w"]
+                    ]
+            # Initial positions
+            player.uppdate_pos(1,1)
+            goal.add_goal(1,4)
+            goal.add_goal(3,4)
+        case "2":
+            board = [
+                    ["w", "w", "w", "w", "w", "w", "w"],
+                    ["w", "o", "t", "o", "g", "w", "w"],
+                    ["w", "o", "w", "w", "w", "w", "w"],
+                    ["w", "p", "o", "b", "o", "t", "w"],
+                    ["w", "o", "w", "b", "w", "w", "w"],
+                    ["w", "o", "o", "o", "o", "g", "w"],
+                    ["w", "w", "w", "w", "w", "w", "w"]
+                    ]
+            # Initial positions
+            player.uppdate_pos(3,1)
+            goal.add_goal(1,4)
+            goal.add_goal(5,5)
+            portal.add_portal(3,5)
+            portal.add_portal(1,2)
 
 def printB():
     '''  Print curent board   '''
@@ -59,9 +55,50 @@ def printB():
             print(symbols[board[r][c]], end=" ")
         print()
 
+def get_board():
+    ''' Returns the board '''
+    global board
+    return board
+
+def show_hint(hints):
+    global board, hint
+    oldPos = player.get_pos()
+
+    for h in hints:
+        row = int(h[0])
+        col = int(h[1])
+        
+        if board[row][col] == "b":
+            print("box")
+            # Get position for hint
+            if row - oldPos[0] != 0:
+                d = row - oldPos[0]
+                board[row + d][col] = "h"
+                hint = (row + d, col)
+            else:
+                d = col - oldPos[1]
+                board[row][col + d] = "h"
+                hint = (row, col + d)
+            return True
+        oldPos = (row, col)
+
+def was_hint(r,c):
+    global hint
+    if hint == (r,c):
+        return True
+
 def uppdate(oldPos, newPos, toMove):
     '''  Uppdate the board  '''
-    global board
+    global board, hint
+
+    if toMove == "b" and board[newPos[0]][newPos[1]] == "h": # Hint
+        if goal.was_goal(newPos[0], newPos[1], "h"):
+            board[newPos[0]][newPos[1]] = "g"
+        elif portal.was_portal(newPos[0], newPos[1], "h"):
+            board[newPos[0]][newPos[1]] = "t"
+        else:
+            board[newPos[0]][newPos[1]] = "o"  
+        hint = ()
     
     match board[newPos[0]][newPos[1]]:
         case "w": # Wall
@@ -69,30 +106,12 @@ def uppdate(oldPos, newPos, toMove):
         
         case "o": # Open space
             board[newPos[0]][newPos[1]] = toMove
-
-            # What was the original space
-            if goal.was_goal(oldPos[0], oldPos[1], toMove):
-                board[oldPos[0]][oldPos[1]] = "g"
-            elif portal.was_portal(oldPos[0], oldPos[1], toMove):
-                board[oldPos[0]][oldPos[1]] = "t"
-            else:
-                board[oldPos[0]][oldPos[1]] = "o"  
-            return True
         
         case "g": # Goal
             if toMove == "b":
                 goal.box_in_goal()
             
             board[newPos[0]][newPos[1]] = toMove
-
-            # What was the original space
-            if goal.was_goal(oldPos[0], oldPos[1], toMove):
-                board[oldPos[0]][oldPos[1]] = "g"
-            elif portal.was_portal(oldPos[0], oldPos[1], toMove):
-                board[oldPos[0]][oldPos[1]] = "t"
-            else:
-                board[oldPos[0]][oldPos[1]] = "o"
-            return True
         
         case "b": # Box
             if toMove != "b":
@@ -109,15 +128,6 @@ def uppdate(oldPos, newPos, toMove):
                 # Move box if possible
                 if uppdate((newPos[0], newPos[1]), boxMove, "b"):
                     board[newPos[0]][newPos[1]] = toMove
-
-                    # What was the original space
-                    if goal.was_goal(oldPos[0], oldPos[1], toMove):
-                        board[oldPos[0]][oldPos[1]] = "g"
-                    elif portal.was_portal(oldPos[0], oldPos[1], toMove):
-                        board[oldPos[0]][oldPos[1]] = "t"
-                    else:
-                        board[oldPos[0]][oldPos[1]] = "o"
-                    return True
                 else:
                     return False
             else:
@@ -132,15 +142,19 @@ def uppdate(oldPos, newPos, toMove):
             
             board[newPos[0]][newPos[1]] = toMove
 
-            # What was the original space
-            if goal.was_goal(oldPos[0], oldPos[1], toMove):
-                board[oldPos[0]][oldPos[1]] = "g"
-            elif portal.was_portal(oldPos[0], oldPos[1], toMove):
-                board[oldPos[0]][oldPos[1]] = "t"
-            else:
-                board[oldPos[0]][oldPos[1]] = "o"
-            return True
+        case "h": # Hint
+            board[newPos[0]][newPos[1]] = toMove
 
-def get_board():
-    global board
-    return board
+    # What was the original space
+    og = ""
+    if goal.was_goal(oldPos[0], oldPos[1], toMove):
+        og = "g"
+    elif portal.was_portal(oldPos[0], oldPos[1], toMove):
+        og = "t"
+    elif was_hint(oldPos[0], oldPos[1]):
+        og = "h"
+    else:
+        og = "o"  
+
+    board[oldPos[0]][oldPos[1]] = og
+    return True

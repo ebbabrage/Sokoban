@@ -26,3 +26,7 @@ def move(move):
         pos = newPos
     else:
         print("Ivalid move")
+
+def get_pos():
+    global pos
+    return pos

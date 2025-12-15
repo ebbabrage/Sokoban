@@ -20,7 +20,6 @@ def box_in_goal():
     global finishedBoxes
     finishedBoxes += 1
     
-
 def is_winner():
     '''  Returns true if all boxes are in goals'''
     global goals, finishedBoxes
@@ -29,5 +28,3 @@ def is_winner():
     else:
         return False
     
-
-
