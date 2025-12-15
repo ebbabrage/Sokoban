@@ -48,6 +48,9 @@ crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,CO
 crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL > COL, crate_one_way_teleporter(ROW, COL-1, DESTIONATION_ROW, DESTIONATION_COL) . %west
 crate(DESTIONATION_ROW, DESTIONATION_COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_COL < COL, crate_one_way_teleporter(ROW, COL+1, DESTIONATION_ROW, DESTIONATION_COL) . %east
 
+%Ensure that crates and players will not exist at the same cell
+:- crate(ROW,COL,T), player_position(ROW,COL,T) .
+
 %Check if crates cover all goal states (do this by checking if there exists a crate which is not covered)
 :- not goal_requirement . 
 
