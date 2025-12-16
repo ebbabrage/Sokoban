@@ -24,8 +24,10 @@ def move(move):
     
     if board.uppdate(pos, newPos, "p"):
         pos = newPos
+        return True
     else:
         print("Ivalid move")
+        return False
 
 def get_pos():
     global pos

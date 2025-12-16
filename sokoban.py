@@ -2,13 +2,25 @@ import board
 import player
 import goal
 import subprocess
+# Import and initialize the pygame library
+import pygame, os
+from pygame.locals import (
+    K_DOWN, K_s, 
+    K_UP, K_w,
+    K_LEFT, K_a,
+    K_RIGHT, K_d,
+    K_h,
+    K_SPACE,
+    KEYDOWN
+)
+
+pygame.init()
 
 def info():
     print("------------------------------")
     print("Here are the controls:")
-    print("w - Up\na - Left\ns - Down\nd - Right\n")
-    print("Other controls:")
-    print("q - Quit\nr - Restart level\nhint - Get a hint\ninfo - Get this information again")
+    print("Use arrow keys or wasd to move the player")
+    print("Press\nh for hint\nspace for reset")
     print("------------------------------")
 
 def sort_after(x):
@@ -92,7 +104,129 @@ def get_hint():
 
     return tripplet_list
 
+def main(startBoard,lvl):
+    # Variables
+    b = startBoard
+
+    tile_size = 50
+    rows = len(b)
+    cols = len(b[0])
+    screen_height = rows * tile_size
+    screen_width = cols * tile_size
+
+    # Create screen
+    screen = pygame.display.set_mode([screen_width, screen_height])
+    pygame.display.set_caption("Sokoban")
+
+    # Images
+    basePath = os.path.dirname(os.path.abspath(__file__))
+    imgPath = os.path.join(basePath, "images")
+    boxImg = pygame.image.load(os.path.join(imgPath, "box.png"))
+    boxImg = pygame.transform.scale(boxImg, (tile_size,tile_size))
+    hintImg = pygame.transform.scale(boxImg, (tile_size,tile_size)).convert_alpha()
+    hintImg.set_alpha(150)
+    playerImg = pygame.image.load(os.path.join(imgPath, "player.png"))
+    playerImg = pygame.transform.scale(playerImg, (tile_size,tile_size))
+    goalImg = pygame.image.load(os.path.join(imgPath, "tree.png"))
+    goalImg = pygame.transform.scale(goalImg, (tile_size,tile_size))
+
+    block = {
+        "w" : (11,46,12),
+        "o" : (200,200,200),
+        "b" : (255,0,0),
+        "g" : (0,255,0),
+        "p" : (0,0,255),
+        "t" : (120,20,200),
+        "h" : (100,50,40)
+    }
+
+    # Text
+    bold = pygame.font.match_font('georgia', bold = True)
+    font = pygame.font.SysFont(bold, 50)
+    text = font.render("YOU WIN!", True, (255,0,0))
+    textbox = text.get_rect()
+    textbox.center = (screen_width/2, screen_height/2)
+    
+
+    # Run until the asked to quit
+    running = True
+    while running:
+
+        # Did the user click the window close button?
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            
+            if event.type == KEYDOWN:
+                # Move Up
+                if event.key == K_UP or event.key == K_w:
+                    if player.move("w"):
+                        b = board.get_board()
+                # Move down
+                if event.key == K_DOWN or event.key == K_s:
+                    if player.move("s"):
+                        b = board.get_board()
+                # Move left
+                if event.key == K_LEFT or event.key == K_a:
+                    if player.move("a"):
+                        b = board.get_board()
+                # Move right
+                if event.key == K_RIGHT or event.key == K_d:
+                    if player.move("d"):
+                        b = board.get_board()
+                # Get hint
+                if event.key == K_h: 
+                    hint = get_hint()
+                    board.show_hint(hint)
+                    b = board.get_board()
+                # Reset
+                if event.key == K_SPACE: 
+                    board.start(lvl)
+                    b = board.get_board()
+
+        # Fill the background
+        screen.fill((200,200,200))
+
+        # Draw board
+        for r in range(rows):
+            for c in range(cols):
+                if b[r][c] == "b":
+                    screen.blit(boxImg, (c*tile_size,r*tile_size))
+                elif b[r][c] == "p":
+                    screen.blit(playerImg, (c*tile_size,r*tile_size))
+                elif b[r][c] == "g":
+                    screen.blit(goalImg, (c*tile_size,r*tile_size))
+                elif b[r][c] == "h":
+                    screen.blit(hintImg, (c*tile_size,r*tile_size))
+                else:
+                    color = block[b[r][c]]
+                    rec = pygame.Rect(
+                        c * tile_size,
+                        r * tile_size,
+                        tile_size,
+                        tile_size
+                        )
+                    pygame.draw.rect(screen, color, rec)
+                   
+        # Flip the display
+        pygame.display.flip()
+
+        if goal.is_winner():
+            print("YOU WIN!")
+            screen.blit(text, textbox)
+            pygame.display.flip()
+            while running:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT or event.type == KEYDOWN:
+                        running = False
+
+
+    pygame.quit()
+
+
+
 info()
+lvl = ""
 while True:
     lvl = input("Choose a level (1-2): ")
     if int(lvl) > 0 and int(lvl) <= 2:
@@ -101,22 +235,30 @@ while True:
         break
     print("Not a level")
 
-while True:
-    print("Make a move:", end=" ")
-    move = input()
-    if move == "q":
-        break
-    if move == "r":
-        board.start()
-    if move == "info":
-        info()
-    if move == "hint":
-        hint = get_hint()
-        board.show_hint(hint)
-    else:
-        player.move(move)
-    board.printB()
+main(board.get_board(), lvl)
 
-    if goal.is_winner():
-        print("YOU WIN!")
-        break
+
+
+
+
+
+# Play game in terminal
+# while True:
+#     print("Make a move:", end=" ")
+#     move = input()
+#     if move == "q":
+#         break
+#     if move == "r":
+#         board.start(lvl)
+#     if move == "info":
+#         info()
+#     if move == "hint":
+#         hint = get_hint()
+#         board.show_hint(hint)
+#     else:
+#         player.move(move)
+#     board.printB()
+
+#     if goal.is_winner():
+#         print("YOU WIN!")
+#         break
