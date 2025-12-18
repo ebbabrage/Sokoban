@@ -1,5 +1,5 @@
 %Time horizon, time(T)
-time(0..30) .
+time(0..25) .
 
 %Initiate players and crates as time based /3
 player_position(ROW,COL,0) :- player_position(ROW,COL) .
@@ -74,8 +74,7 @@ crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_RO
 :- not goal_requirement . 
 
 %Minimize solution
-number_of_moves_to_solve(COUNT) :- COUNT = #count { 1:move_to(_,_,_) } .
-#minimize { COUNT:number_of_moves_to_solve(COUNT) } .
+#minimize { T : move_to(_,_,T) } .
 
 %OBS this can risk failing to find solutions, therefore only use for testing. to reduce calculations restrict the player from moving back to the tile it came from
 #show move_to/3 .
