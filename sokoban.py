@@ -1,8 +1,5 @@
-import board
-import player
-import goal
+import board, player, goal
 import subprocess
-# Import and initialize the pygame library
 import pygame, os
 from pygame.locals import (
     K_DOWN, K_s, 
@@ -24,7 +21,7 @@ def info():
     print("------------------------------")
 
 def sort_after(x):
-    return x[2]
+    return int(x[2])
 
 def get_hint():
 
@@ -121,23 +118,33 @@ def main(startBoard,lvl):
     # Images
     basePath = os.path.dirname(os.path.abspath(__file__))
     imgPath = os.path.join(basePath, "images")
+    #   box
     boxImg = pygame.image.load(os.path.join(imgPath, "box.png"))
     boxImg = pygame.transform.scale(boxImg, (tile_size,tile_size))
+    #   hint
     hintImg = pygame.transform.scale(boxImg, (tile_size,tile_size)).convert_alpha()
     hintImg.set_alpha(150)
+    #   player
     playerImg = pygame.image.load(os.path.join(imgPath, "player.png"))
     playerImg = pygame.transform.scale(playerImg, (tile_size,tile_size))
+    #   goal
     goalImg = pygame.image.load(os.path.join(imgPath, "tree.png"))
     goalImg = pygame.transform.scale(goalImg, (tile_size,tile_size))
+    #   portal
+    portalImg = pygame.image.load(os.path.join(imgPath, "portal.png"))
+    portalImg = pygame.transform.scale(portalImg, (tile_size,tile_size))
 
-    block = {
+    pics = {
+        "b" : boxImg,
+        "g" : goalImg,
+        "p" : playerImg,
+        "t" : portalImg,
+        "h" : hintImg
+    }
+
+    colors = {
         "w" : (11,46,12),
         "o" : (200,200,200),
-        "b" : (255,0,0),
-        "g" : (0,255,0),
-        "p" : (0,0,255),
-        "t" : (120,20,200),
-        "h" : (100,50,40)
     }
 
     # Text
@@ -146,10 +153,15 @@ def main(startBoard,lvl):
     text = font.render("YOU WIN!", True, (255,0,0))
     textbox = text.get_rect()
     textbox.center = (screen_width/2, screen_height/2)
+
+    text2 = font.render("Unsolvable", True, (255,0,0))
+    textbox2 = text2.get_rect()
+    textbox2.center = (screen_width/2, screen_height/2)
     
 
     # Run until the asked to quit
     running = True
+    solvable = True
     while running:
 
         # Did the user click the window close button?
@@ -177,8 +189,13 @@ def main(startBoard,lvl):
                 # Get hint
                 if event.key == K_h: 
                     hint = get_hint()
-                    board.show_hint(hint)
-                    b = board.get_board()
+                    print(hint)
+                    if hint != None:
+                        board.show_hint(hint)
+                        b = board.get_board()
+                    else:
+                        solvable = False
+                        
                 # Reset
                 if event.key == K_SPACE: 
                     board.start(lvl)
@@ -190,16 +207,8 @@ def main(startBoard,lvl):
         # Draw board
         for r in range(rows):
             for c in range(cols):
-                if b[r][c] == "b":
-                    screen.blit(boxImg, (c*tile_size,r*tile_size))
-                elif b[r][c] == "p":
-                    screen.blit(playerImg, (c*tile_size,r*tile_size))
-                elif b[r][c] == "g":
-                    screen.blit(goalImg, (c*tile_size,r*tile_size))
-                elif b[r][c] == "h":
-                    screen.blit(hintImg, (c*tile_size,r*tile_size))
-                else:
-                    color = block[b[r][c]]
+                if b[r][c] == "w" or b[r][c] == "o":
+                    color = colors[b[r][c]]
                     rec = pygame.Rect(
                         c * tile_size,
                         r * tile_size,
@@ -207,9 +216,24 @@ def main(startBoard,lvl):
                         tile_size
                         )
                     pygame.draw.rect(screen, color, rec)
+                else:
+                    img = pics[b[r][c]]
+                    screen.blit(img, (c*tile_size,r*tile_size))
                    
         # Flip the display
         pygame.display.flip()
+
+        if not solvable:
+            screen.blit(text2, textbox2)
+            pygame.display.flip()
+            pause = True
+            while pause:
+                for event in pygame.event.get():
+                    if event.type == KEYDOWN:
+                        board.start(lvl)
+                        b = board.get_board()
+                        pause = False
+                        solvable = True
 
         if goal.is_winner():
             print("YOU WIN!")
@@ -220,22 +244,26 @@ def main(startBoard,lvl):
                     if event.type == pygame.QUIT or event.type == KEYDOWN:
                         running = False
 
-
     pygame.quit()
-
-
 
 info()
 lvl = ""
 while True:
+
     lvl = input("Choose a level (1-2): ")
     if int(lvl) > 0 and int(lvl) <= 2:
         board.start(lvl)
         board.printB()
+        main(board.get_board(), lvl)
         break
-    print("Not a level")
+    elif lvl == "quit": 
+        break
+    else:
+        print("Not a level")
 
-main(board.get_board(), lvl)
+    
+
+
 
 
 
