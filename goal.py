@@ -1,7 +1,12 @@
 goals = []
 finishedBoxes = 0
 
-def add_goal(r,c):
+def reset():
+    global goals, finishedBoxes
+    goals = []
+    finishedBoxes = 0
+
+def add(r,c):
     '''  Add goal to list'''
     global goals
     goals.append((r,c))

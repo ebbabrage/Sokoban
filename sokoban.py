@@ -154,7 +154,7 @@ def main(startBoard,lvl):
     textbox = text.get_rect()
     textbox.center = (screen_width/2, screen_height/2)
 
-    text2 = font.render("Unsolvable", True, (255,0,0))
+    text2 = font.render("Unsolvable", True, (255,255,255))
     textbox2 = text2.get_rect()
     textbox2.center = (screen_width/2, screen_height/2)
     
@@ -189,10 +189,9 @@ def main(startBoard,lvl):
                 # Get hint
                 if event.key == K_h: 
                     hint = get_hint()
-                    print(hint)
                     if hint != None:
-                        board.show_hint(hint)
-                        b = board.get_board()
+                        if board.show_hint(hint):
+                            b = board.get_board()
                     else:
                         solvable = False
                         
@@ -234,15 +233,28 @@ def main(startBoard,lvl):
                         b = board.get_board()
                         pause = False
                         solvable = True
+                    if event.type == pygame.QUIT:
+                        running = False
+                        pause = False
 
         if goal.is_winner():
             print("YOU WIN!")
             screen.blit(text, textbox)
             pygame.display.flip()
-            while running:
+            pause = True
+            while pause:
                 for event in pygame.event.get():
-                    if event.type == pygame.QUIT or event.type == KEYDOWN:
+                    if event.type == KEYDOWN:
+                        if event.key == K_SPACE: 
+                            board.start(lvl)
+                            b = board.get_board()
+                            pause = False
+                        else:
+                            running = False
+                            pause = False
+                    if event.type == pygame.QUIT:
                         running = False
+                        pause = False
 
     pygame.quit()
 

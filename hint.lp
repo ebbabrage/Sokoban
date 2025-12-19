@@ -22,8 +22,8 @@ cell(2,5,wall).
 cell(2,6,wall).
 cell(3,0,wall).
 cell(3,1,open).
-player_position(3,1).
 cell(3,2,open).
+player_position(3,2).
 cell(3,3,open).
 cell(3,4,open).
 cell(3,5,open).

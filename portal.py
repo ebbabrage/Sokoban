@@ -1,6 +1,10 @@
 portals = []
 
-def add_portal(r,c):
+def reset():
+    global portals
+    portals = []
+
+def add(r,c):
     '''  Add portal to list'''
     global portals
     portals.append((r,c))

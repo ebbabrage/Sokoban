@@ -17,6 +17,8 @@ symbols = {
 def start(lvl):
     '''  Set initial gameboard  '''
     global board 
+    goal.reset()
+    portal.reset()
     match lvl:
         case "1":
             board = [
@@ -28,8 +30,8 @@ def start(lvl):
                     ]
             # Initial positions
             player.uppdate_pos(1,1)
-            goal.add_goal(1,4)
-            goal.add_goal(3,4)
+            goal.add(1,4)
+            goal.add(3,4)
         case "2":
             board = [
                     ["w", "w", "w", "w", "w", "w", "w"],
@@ -42,10 +44,10 @@ def start(lvl):
                     ]
             # Initial positions
             player.uppdate_pos(3,1)
-            goal.add_goal(1,4)
-            goal.add_goal(5,5)
-            portal.add_portal(3,5)
-            portal.add_portal(1,2)
+            goal.add(1,4)
+            goal.add(5,5)
+            portal.add(3,5)
+            portal.add(1,2)
 
 def printB():
     '''  Print curent board   '''
@@ -69,7 +71,6 @@ def show_hint(hints):
         col = int(h[1])
         
         if board[row][col] == "b":
-            print("box")
             # Get position for hint
             if row - oldPos[0] != 0:
                 d = row - oldPos[0]
