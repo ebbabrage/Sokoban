@@ -36,7 +36,7 @@ player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), not player_one_way_teleporte
 player_position(DESTIONATION_ROW,DESTIONATION_COL,T+1) :- move_to(ROW,COL,T), player_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW,DESTIONATION_COL,T) .
 
 %If the player teleporter destination is occupied
-player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), player_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL), not crate(DESTIONATION_ROW,DESTIONATION_COL,T)  .
+player_position(ROW,COL,T+1) :- move_to(ROW,COL,T), player_one_way_teleporter(ROW, COL, DESTIONATION_ROW, DESTIONATION_COL), crate(DESTIONATION_ROW,DESTIONATION_COL,T)  .
 
 %Normal tiles crate movement
 crate(ROW+1,COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_ROW,P_COL,T), P_ROW < ROW, not crate_one_way_teleporter(ROW+1, COL, _, _) . %south
@@ -78,3 +78,5 @@ crate(ROW, COL,T+1) :- crate(ROW,COL,T),move_to(ROW,COL,T), player_position(P_RO
 
 %OBS this can risk failing to find solutions, therefore only use for testing. to reduce calculations restrict the player from moving back to the tile it came from
 #show move_to/3 .
+%show crate/3 .
+%#show player_position/3 .
