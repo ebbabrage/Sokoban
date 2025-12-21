@@ -30,5 +30,6 @@ def move(move):
         return False
 
 def get_pos():
+    ''' Returns position of player '''
     global pos
     return pos

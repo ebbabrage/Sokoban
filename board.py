@@ -4,6 +4,7 @@ import portal
 board = []
 hint = ()
 
+# Symbol dictionary for terminal game
 symbols = {
     "w" : "#",
     "o" : " ",
@@ -63,6 +64,7 @@ def get_board():
     return board
 
 def show_hint(hints):
+    ''' Adds hint to board '''
     global board, hint
     oldPos = player.get_pos()
 

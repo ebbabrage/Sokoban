@@ -2,6 +2,7 @@ goals = []
 finishedBoxes = 0
 
 def reset():
+    ''' Resets the goals '''
     global goals, finishedBoxes
     goals = []
     finishedBoxes = 0

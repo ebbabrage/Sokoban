@@ -1,6 +1,7 @@
 portals = []
 
 def reset():
+    ''' Resets the  portals '''
     global portals
     portals = []
 
